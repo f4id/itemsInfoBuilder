@@ -27,6 +27,7 @@ struct item{
     string description = "This item has no description.";
 	string onEquip = "";
 	string onRemove = "";
+	string playmod = "";
 
     //from items.dat
     int itemID = 0;
@@ -544,7 +545,7 @@ void parseWiki(int threadNum){
         size_t secondl = response.find("}}", firstl);
         if (firstl != string::npos && secondl != string::npos){
             string result = response.substr(firstl + 2, secondl - firstl - 2);
-			while (result.find("[[") != string::npos){//remove links to other items
+			while (result.find("[[") != string::npos) {//remove links to other items
 				size_t firstl = result.find("[[");
 				size_t secondl = result.find("]]");
 				string replace = result.substr(firstl, secondl - firstl + 2);
@@ -724,7 +725,6 @@ void parseWiki(int threadNum){
 					printf("%s has wrong onEquip message info size: %li\n", items[i].name.c_str(), info.size());
 				}
 			}
-			if (items[i].onEquip == "") printf("Didn't find message for %s (id: %i)\n", items[i].name.c_str(), i);
 		}
 		{
 			size_t firstOnRemoveMsg = response.find("{{Removed");
@@ -741,7 +741,20 @@ void parseWiki(int threadNum){
 					printf("%s has wrong onRemove message info size: %li\n", items[i].name.c_str(), info.size());
 				}
 			}
-			if (items[i].onRemove == "") printf("Didn't find message for %s (id: %i)\n", items[i].name.c_str(), i);
+		}
+		{
+			size_t first = response.find("grants the ''");
+			size_t second = response.find("'' [[", first);
+			if (first != string::npos && second != string::npos){
+				string result = response.substr(first + 2, second - first);
+				vector<string> info = explode("''", result);
+				if (info.size() == 3) {
+					items[i].playmod = info[1];
+				}
+				else {
+					printf("%s has wrong playmod message info size: %li\n", items[i].name.c_str(), info.size());
+				}
+			}
 		}
     }
     doneParsing++;
@@ -819,6 +832,7 @@ void saveJSON(){
 		j["description"] = item.description;
 		j["onEquip"] = item.onEquip;
 		j["onRemove"] = item.onRemove;
+		j["playmod"] = item.playmod;
 		j["mods"] = item.mods;
         js["items"].push_back(j);
 	}
