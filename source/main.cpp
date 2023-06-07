@@ -28,6 +28,7 @@ struct item{
 	string onEquip = "";
 	string onRemove = "";
 	string playmod = "";
+	string chi = "None";
 
     //from items.dat
     int itemID = 0;
@@ -543,8 +544,10 @@ void parseWiki(int threadNum){
         }
         size_t firstl = response.find("{{Item");
         size_t secondl = response.find("}}", firstl);
-        if (firstl != string::npos && secondl != string::npos){
+        if (firstl != string::npos && secondl != string::npos) {
             string result = response.substr(firstl + 2, secondl - firstl - 2);
+			vector<string> getChi = explode("|", result);
+			if (getChi.size() == 3) items[i].chi = getChi[2];
 			while (result.find("[[") != string::npos) {//remove links to other items
 				size_t firstl = result.find("[[");
 				size_t secondl = result.find("]]");
@@ -709,7 +712,7 @@ void parseWiki(int threadNum){
 				}
 			}
 		}
-		//trying to get on_equip & on_remove message
+		//more things needed
 		{
 			size_t firstOnEquipMsg = response.find("{{Added");
 			size_t secondOnEquipMsg = response.find("}}", firstOnEquipMsg);
@@ -825,6 +828,7 @@ void saveJSON(){
 		j["itemID"] = item.itemID;
         j["name"] = item.name;
         j["collisionType"] = item.collisionType;
+		j["chi"] = item.chi;
         j["breakHits"] = item.breakHits;
         j["restoreTime"] = item.restoreTime;
         j["rarity"] = item.rarity;
