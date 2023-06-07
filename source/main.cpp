@@ -24,7 +24,9 @@ enum Mods {
 struct item{
     //needed by GTace
     int mods = 0;
-    string description = "No info.";
+    string description = "This item has no description.";
+	string onEquip = "";
+	string onRemove = "";
 
     //from items.dat
     int itemID = 0;
@@ -536,7 +538,7 @@ void parseWiki(int threadNum){
                 }
                 response = response.substr(secondl, response.length());
             }
-            if (items[i].description != "No info.") continue;
+            if (items[i].description != "This item has no description.") continue;
         }
         size_t firstl = response.find("{{Item");
         size_t secondl = response.find("}}", firstl);
@@ -615,7 +617,7 @@ void parseWiki(int threadNum){
                 }
             }
         }
-        if (items[i].description == "No info.") printf("Didn't find description for %s (id: %i)\n", items[i].name.c_str(), i);
+        if (items[i].description == "This item has no description.") printf("Didn't find description for %s (id: %i)\n", items[i].name.c_str(), i);
 		//trying to get splice recipe
 		{
 			size_t first = response.find("{{RecipeSplice");
@@ -706,6 +708,41 @@ void parseWiki(int threadNum){
 				}
 			}
 		}
+		//trying to get on_equip & on_remove message
+		{
+			size_t firstOnEquipMsg = response.find("{{Added");
+			size_t secondOnEquipMsg = response.find("}}", firstOnEquipMsg);
+			if (firstOnEquipMsg != string::npos && secondOnEquipMsg != string::npos) {
+				string result = response.substr(firstOnEquipMsg + 2, secondOnEquipMsg  - firstOnEquipMsg - 2);
+				vector<string> info = explode("|", result);
+				if (info.size() == 1 || info.size() == 2) {
+					if (info[0] == "Added") {
+						items[i].onEquip = info[1];
+					}
+				}
+				else {
+					printf("%s has wrong onEquip message info size: %li\n", items[i].name.c_str(), info.size());
+				}
+			}
+			if (items[i].onEquip == "") printf("Didn't find message for %s (id: %i)\n", items[i].name.c_str(), i);
+		}
+		{
+			size_t firstOnRemoveMsg = response.find("{{Removed");
+			size_t secondOnRemoveMsg = response.find("}}", firstOnRemoveMsg);
+			if (firstOnRemoveMsg != string::npos && secondOnRemoveMsg != string::npos) {
+				string result = response.substr(firstOnRemoveMsg + 2, secondOnRemoveMsg  - firstOnRemoveMsg - 2);
+				vector<string> info = explode("|", result);
+				if (info.size() == 1 || info.size() == 2) {
+					if (info[0] == "Removed") {
+						items[i].onRemove = info[1];
+					}
+				}
+				else {
+					printf("%s has wrong onRemove message info size: %li\n", items[i].name.c_str(), info.size());
+				}
+			}
+			if (items[i].onRemove == "") printf("Didn't find message for %s (id: %i)\n", items[i].name.c_str(), i);
+		}
     }
     doneParsing++;
 }
@@ -773,71 +810,15 @@ void saveJSON(){
 		item item = items[i];
 		nlohmann::json j;
 		j["itemID"] = item.itemID;
-        j["itemProps1"] = item.itemProps1;
-        j["itemProps2"] = item.itemProps2;
-        j["itemCategory"] = item.itemCategory;
-        j["hitSoundType"] = item.hitSoundType;
         j["name"] = item.name;
-        j["texture"] = item.texture;
-        j["textureHash"] = item.textureHash;
-        j["itemKind"] = item.itemKind;
-        j["val1"] = item.val1;
-        j["textureX"] = item.textureX;
-        j["textureY"] = item.textureY;
-        j["spreadType"] = item.spreadType;
-        j["isStripeyWallpaper"] = item.isStripeyWallpaper;
         j["collisionType"] = item.collisionType;
         j["breakHits"] = item.breakHits;
         j["restoreTime"] = item.restoreTime;
-        j["clothingType"] = item.clothingType;
         j["rarity"] = item.rarity;
-        j["maxAmount"] = item.maxAmount;
-        j["extraFile"] = item.extraFile;
-        j["extraFileHash"] = item.extraFileHash;
-        j["audioVolume"] = item.audioVolume;
-        j["petName"] = item.petName;
-        j["petPrefix"] = item.petPrefix;
-        j["petSuffix"] = item.petSuffix;
-        j["petAbility"] = item.petAbility;
-        j["seedBase"] = item.seedBase;
-        j["seedOverlay"] = item.seedOverlay;
-        j["treeBase"] = item.treeBase;
-        j["treeLeaves"] = item.treeLeaves;
-        j["seedColor"] = item.seedColor;
-        j["seedOverlayColor"] = item.seedOverlayColor;
         j["growTime"] = item.growTime;
-        j["val2"] = item.val2;
-        j["isRayman"] = item.isRayman;
-        j["extraOptions"] = item.extraOptions;
-        j["texture2"] = item.texture2;
-        j["extraOptions2"] = item.extraOptions2;
-        j["punchOptions"] = item.punchOptions;
-        j["extraFieldUnk_4"] = item.extraFieldUnk_4;
-        j["value"] = item.value;
-        j["value2"] = item.value2;
-        j["unkValueShort1"] = item.unkValueShort1;
-        j["unkValueShort2"] = item.unkValueShort2;
-		j["newValue"] = item.newValue;
-		j["newValue1"] = item.newValue1;
-		j["newValue2"] = item.newValue2;
-		j["newValue3"] = item.newValue3;
-		j["newValue4"] = item.newValue4;
-		j["newValue5"] = item.newValue5;
-		j["newValue6"] = item.newValue6;
-		j["newValue7"] = item.newValue7;
-		j["newValue8"] = item.newValue8;
-		j["newValue9"] = item.newValue9;
-		j["newInt1"] = item.newInt1;
-		j["newInt2"] = item.newInt2;
-		j["canPlayerSit"] = item.canPlayerSit;
-		j["sitPlayerOffsetX"] = item.sitPlayerOffsetX;
-		j["sitPlayerOffsetY"] = item.sitPlayerOffsetY;
-		j["sitOverlayX"] = item.sitOverlayX;
-		j["sitOverlayY"] = item.sitOverlayY;
-		j["sitOverlayOffsetX"] = item.sitOverlayOffsetX;
-		j["sitOverlayOffsetY"] = item.sitOverlayOffsetY;
-		j["sitOverlayTexture"] = item.sitOverlayTexture;
 		j["description"] = item.description;
+		j["onEquip"] = item.onEquip;
+		j["onRemove"] = item.onRemove;
 		j["mods"] = item.mods;
         js["items"].push_back(j);
 	}
@@ -867,46 +848,6 @@ void saveRecipes(){
 		o.close();
 	}
 }
-
-/*void saveJSONrecipes(){
-	{
-		nlohmann::json js;
-		for (auto& i : splices){
-			nlohmann::json j;
-			j["itemID"] = i.result;
-			j["madeOf"].push_back(i.item1);
-			j["madeOf"].push_back(i.item2);
-			js["splices"].push_back(j);
-		}
-		ofstream o("splices.json");
-		o << setw(4) << js << endl;
-		o.close();
-	}
-	{
-		nlohmann::json js;
-		for (auto& i : combines){
-			nlohmann::json j;
-			j["resultItem"].push_back(i.result.first);
-			j["resultItem"].push_back(i.result.second);
-			nlohmann::json ji1;
-			ji1["itemID"] = i.item1.first;
-			ji1["count"] = i.item1.second;
-			j["madeOf"].push_back(ji1);
-			nlohmann::json ji2;
-			ji2["itemID"] = i.item2.first;
-			ji2["count"] = i.item2.second;
-			j["madeOf"].push_back(ji2);
-			nlohmann::json ji3;
-			ji3["itemID"] = i.item3.first;
-			ji3["count"] = i.item3.second;
-			j["madeOf"].push_back(ji3);
-			js["combines"].push_back(j);
-		}
-		ofstream o("combines.json");
-		o << setw(4) << js << endl;
-		o.close();
-	}
-}*/
 
 int main(){
 	decode_itemsDat();
