@@ -858,9 +858,9 @@ void saveRecipes(){
 	{
 		ofstream o("combines.txt");
 		//heading
-		o << "//Combine recipes (GTWiki parser by mar4ello6)\n//Format: itemID(result),count|ingredient1,count|ingredient2,count|ingredient3,count\n";
+		o << "//Combine recipes (GTWiki parser by mar4ello6)\n//Format: ingredient1,count|ingredient2,count|ingredient3,count|itemID(result),count\n";
 		for (auto& i : combines){
-			o << to_string(i.item1.first) << "," << to_string(i.item1.second) << "|" << to_string(i.item2.first) << "," << to_string(i.item2.second) << "|" << to_string(i.item3.first) << "," << to_string(i.item3.second) << to_string(i.result.first) << "," << to_string(i.result.second) << "\n";
+			o << to_string(i.item1.first) << "," << to_string(i.item1.second) << "|" << to_string(i.item2.first) << "," << to_string(i.item2.second) << "|" << to_string(i.item3.first) << "," << to_string(i.item3.second) << "|" << to_string(i.result.first) << "," << to_string(i.result.second) << "\n";
 		}
 		o.close();
 	}
