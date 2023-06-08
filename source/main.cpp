@@ -108,10 +108,10 @@ struct SpliceItem{
 };
 
 struct CombineItem{
-	pair<int, unsigned char> result; //result item & count
 	pair<int, unsigned char> item1; //needed item (id&count)
 	pair<int, unsigned char> item2;	//needed item (id&count)
 	pair<int, unsigned char> item3;	//needed item (id&count)
+	pair<int, unsigned char> result; //result item & count
 };
 
 mutex recipeMutex;
@@ -694,10 +694,10 @@ void parseWiki(int threadNum){
 						}
 						if (item1 != 0 && item2 != 0 && item3 != 0 && item1c != 0 && item2c != 0 && item3c != 0 && resultC != 0){
 							CombineItem it;
-							it.result = {i, resultC};
 							it.item1 = {item1, item1c};
 							it.item2 = {item2, item2c};
 							it.item3 = {item3, item3c};
+							it.result = {i, resultC};
 							recipeMutex.lock();
 							combines.push_back(it);
 							recipeMutex.unlock();
@@ -860,8 +860,7 @@ void saveRecipes(){
 		//heading
 		o << "//Combine recipes (GTWiki parser by mar4ello6)\n//Format: itemID(result),count|ingredient1,count|ingredient2,count|ingredient3,count\n";
 		for (auto& i : combines){
-			o << to_string(i.result.first) << "," << to_string(i.result.second) << "|" << to_string(i.item1.first) << "," << to_string(i.item1.second) << "|"
-			  << to_string(i.item2.first) << "," << to_string(i.item2.second) << "|" << to_string(i.item3.first) << "," << to_string(i.item3.second) << "\n";
+			o << to_string(i.item1.first) << "," << to_string(i.item1.second) << "|" << to_string(i.item2.first) << "," << to_string(i.item2.second) << "|" << to_string(i.item3.first) << "," << to_string(i.item3.second) << to_string(i.result.first) << "," << to_string(i.result.second) << "\n";
 		}
 		o.close();
 	}
