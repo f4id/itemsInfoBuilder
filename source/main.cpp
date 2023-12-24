@@ -374,7 +374,7 @@ void decode_itemsDat(){
 			memcpy(&item.newInt2, data + memPos, 4);
 			memPos += 4;
 		}
-		if (itemsdatVer >= 15){
+		if (itemsdatVer >= 15) {
 			item.canPlayerSit = data[memPos];
 			memPos++;
 			item.sitPlayerOffsetX = *(int*)(data + memPos);
@@ -398,6 +398,10 @@ void decode_itemsDat(){
 				}
 			}
 		}
+	    if (itemsdatVer >= 16) {
+		    int16_t strLen = *(int16_t*)&data[memPos];
+			memPos += 2 + strLen;
+	    }
         if (i != item.itemID) {
             cout << "Unordered item! Something gone wrong?" << endl;
             exit(-1);
