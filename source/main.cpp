@@ -144,7 +144,7 @@ void decode_itemsDat(){
 	memcpy(&itemCount, data + memPos, 4);
 	memPos += 4;
     items = new item[itemCount];
-    if (itemsdatVer > 15){
+    if (itemsdatVer > 16){
         cout << "Unsupported items.dat! Version: " << to_string(itemsdatVer) << endl;
         exit(-1);
     }
