@@ -144,7 +144,7 @@ void decode_itemsDat(){
 	memcpy(&itemCount, data + memPos, 4);
 	memPos += 4;
     items = new item[itemCount];
-    if (itemsdatVer > 16){
+    if (itemsdatVer > 18){
         cout << "Unsupported items.dat! Version: " << to_string(itemsdatVer) << endl;
         exit(-1);
     }
@@ -402,6 +402,8 @@ void decode_itemsDat(){
 		    int16_t strLen = *(int16_t*)&data[memPos];
 			memPos += 2 + strLen;
 	    }
+	    if (itemsdatVer >= 17) memPos += 4;
+	    if (itemsdatVer >= 18) memPos += 4;
         if (i != item.itemID) {
             cout << "Unordered item! Something gone wrong?" << endl;
             exit(-1);
