@@ -405,7 +405,7 @@ void decode_itemsDat(){
 	    if (itemsdatVer >= 17) memPos += 4;
 	    if (itemsdatVer >= 18) memPos += 4;
         if (i != item.itemID) {
-            cout << "Unordered item! Something gone wrong?" << endl;
+            cout << "Unordered item! Something gone wrong? [" << i << ":" << item.itemID << "]" << endl;
             exit(-1);
         }
         items[i] = item;
